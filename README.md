@@ -19,7 +19,7 @@ it, simply add the following line to your Podfile:
 
 ## Author
 
-Bogdan Vitoc, bogdanvitoc@gmail.com
+Bogdan Vitoc, vitocdev@gmail.com
 
 ## License
 
