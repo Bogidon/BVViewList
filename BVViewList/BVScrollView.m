@@ -163,7 +163,7 @@
                              [self layoutIfNeeded];
                          }];
     } else {
-        [NSException raise:@"Out of bounds" format:@"Attempting to insert view out of bounds. Bounds are indexes 0 to %u.", self.privateViews.count+1];
+        [NSException raise:@"Out of bounds" format:@"Attempting to insert view out of bounds. Bounds are indexes 0 to %tu.", self.privateViews.count+1];
     }
 }
 
