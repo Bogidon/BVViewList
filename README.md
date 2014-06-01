@@ -51,7 +51,7 @@ Removing views is also easy!
 #####Removing just one view:
 	- (void)removeViewAtIndex:(NSUInteger)idx animated:(BOOL) animated;
 
-#####Remmoving multiple views::
+#####Removing multiple views::
 	- (void)removeViewsAtIndexes:(NSMutableIndexSet *)indexes animated:(BOOL) animated;
 - Create an NSMutableIndexSet (e.g. `NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(1, 2)];`)
 - Notice: the animation when removing multiple views, especially if they are both visible, is a bit funky. I'll try to fix it, but it's not too bad right now.
