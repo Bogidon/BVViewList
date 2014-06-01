@@ -6,7 +6,6 @@ Pod::Spec.new do |s|
                       BVViewList is a simpler version of UITableView. It lets you easily add and remove views, providing subtle animations along the way. Has been tested on iOS 6.1 and 7.1. Works on both, although it is smoother on 7.1.
                        DESC
   s.homepage         = "https://github.com/Bogidon/BVViewList"
-  s.screenshots      = "https://github.com/Bogidon/BVViewList/blob/master/ios7.gif", "https://github.com/Bogidon/BVViewList/blob/master/ios6.gif"
   s.license          = 'MIT'
   s.author           = { "Bogdan Vitoc" => "vitocdev@gmail.com" }
   s.platform         = :ios
