@@ -1,22 +1,22 @@
 //
-//  BVScrollView.m
+//  BVViewList.m
 //  ViewList
 //
 //  Created by Bogdan Vitoc on 5/29/14.
 //  Copyright (c) 2014 Bogdan Vitoc. All rights reserved.
 //
 
-#import "BVScrollView.h"
+#import "BVViewList.h"
 #import "UIView+UIView_setFrameProperties.h"
 
 #define TRANSITION_ANIMATION_DURATION_SECONDS 0.4
 
-@interface BVScrollView ()
+@interface BVViewList ()
 @property (nonatomic) NSMutableArray *privateViews;
 @property (nonatomic) NSMutableArray *yPosititions;
 @end
 
-@implementation BVScrollView
+@implementation BVViewList
 
 #pragma mark Custom intitializations
 - (instancetype)init {

@@ -1,5 +1,5 @@
 //
-//  BVScrollView.h
+//  BVViewList.h
 //  ViewList
 //
 //  Created by Bogdan Vitoc on 5/29/14.
@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BVScrollView : UIScrollView
+@interface BVViewList : UIScrollView
 
 @property (nonatomic, readonly) NSArray *views;
 @property (nonatomic) NSInteger innerViewSpacing;
