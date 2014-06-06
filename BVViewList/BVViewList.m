@@ -28,6 +28,17 @@
     return self;
 }
 
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    // init performed by xib loading
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        // load picker
+        [self setProperties];
+        self.privateViews = [[NSMutableArray alloc] init];
+    }
+    return self;
+}
+
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
