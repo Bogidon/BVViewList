@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "BVViewList"
-  s.version          = "1.0.0"
+  s.version          = "1.0.1"
   s.summary          = "Dynamically add and remove views on a custom subclass of UIScrollView."
   s.description      = <<-DESC
                       BVViewList is a simpler version of UITableView. It lets you easily add and remove views, providing subtle animations along the way. Has been tested on iOS 6.1 and 7.1. Works on both, although it is smoother on 7.1.
