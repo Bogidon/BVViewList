@@ -30,6 +30,9 @@ it, simply add the following line to your Podfile:
 	```
 	@property (nonatomic, readonly) NSArray *views;
 	@property (nonatomic) NSInteger innerViewSpacing; //defaults to 20
+	@property (nonatomic) NSInteger titleIndent; //defaults to 10
+	@property (nonatomic) NSInteger titleHeight; //defaults to 25
+	@property (nonatomic) UIFont *titleFont; //defaults to UIFontTextStyleSubheadline
 	```
 
 - Initializing BVViewList with views will not let you change the innerViewSpacing of those views from the default. If you want to do that, add the views after initialization.
@@ -55,6 +58,15 @@ Removing views is also easy!
 	- (void)removeViewsAtIndexes:(NSMutableIndexSet *)indexes animated:(BOOL) animated;
 - Create an NSMutableIndexSet (e.g. `NSMutableIndexSet *indexSet = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(1, 2)];`)
 - Notice: the animation when removing multiple views, especially if they are both visible, is a bit funky. I'll try to fix it, but it's not too bad right now.
+
+## Titles
+### Adding titles
+
+To add a title to a specific view, use:
+```
+- (void)addTitle:(NSString*)title withBackgroundColor:(UIColor*)backgroundColor toView:(UIView*)view animated:(BOOL)animated;
+```
+- setting the `backgroundColor` to `nil` will default to `[UIColor lightGrayColor]`
 
 ## Contributions
 All pull requests welcome!
