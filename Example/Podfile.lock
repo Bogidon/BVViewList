@@ -1,0 +1,14 @@
+PODS:
+  - BVViewList (1.1.0)
+
+DEPENDENCIES:
+  - BVViewList (from `../`)
+
+EXTERNAL SOURCES:
+  BVViewList:
+    :path: ../
+
+SPEC CHECKSUMS:
+  BVViewList: 3af6f31200192f218d450933d0b5401255ae3a6c
+
+COCOAPODS: 0.33.1
