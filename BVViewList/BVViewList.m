@@ -13,7 +13,7 @@
 
 @interface BVViewList ()
 @property (nonatomic) NSMutableArray *privateViews;
-@property (nonatomic) NSMutableArray *yPosititions;
+@property (nonatomic) NSMutableArray *titleViews;
 @end
 
 @implementation BVViewList
@@ -24,6 +24,7 @@
     if (self) {
         [self setProperties];
         self.privateViews = [[NSMutableArray alloc] init];
+        self.titleViews = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -35,6 +36,7 @@
         // load picker
         [self setProperties];
         self.privateViews = [[NSMutableArray alloc] init];
+        self.titleViews = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -44,6 +46,7 @@
     if (self) {
         [self setProperties];
         self.privateViews = [[NSMutableArray alloc] init];
+        self.titleViews = [[NSMutableArray alloc] init];
     }
     return self;
 }
@@ -54,7 +57,7 @@
     if (self) {
         [self setProperties];
         self.privateViews = [NSMutableArray arrayWithArray:views];
-        self.yPosititions = [[NSMutableArray alloc] init];
+        self.titleViews = [[NSMutableArray alloc] init];
         
         [views enumerateObjectsUsingBlock:^(UIView *view, NSUInteger idx, BOOL *stop) {
             [self addSubview:view];
@@ -83,7 +86,6 @@
     if (self) {
         [self setProperties];
         [self.privateViews addObject:view];
-        self.yPosititions = [[NSMutableArray alloc] initWithCapacity:1];
         
         [view setTranslatesAutoresizingMaskIntoConstraints:NO];
         //Position
@@ -106,6 +108,9 @@
     self.showsHorizontalScrollIndicator = NO;
     self.bouncesZoom = NO;
     self.innerViewSpacing = 20;
+    self.titleIndent = 10;
+    self.titleHeight = 25;
+    self.titleFont = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
 }
 
 #pragma mark Modifying
@@ -133,8 +138,18 @@
         
         if (self.privateViews.count > idx+1) {
             UIView *nextView = [self.privateViews objectAtIndex:idx+1];
+            
+            //Next view title
+            NSLayoutConstraint *constraint = [self getConstraintForFirstItem:nextView forAttribute:NSLayoutAttributeTop];
+            UIView *nextViewAttachedView = constraint.secondItem;
+            BOOL nextViewHasTitle = NO;
+            if ([self.titleViews containsObject:nextViewAttachedView]) {
+                nextViewHasTitle = YES;
+            }
+            
             if (idx > 0) {
                 UIView *previousView = [self.privateViews objectAtIndex:idx-1];
+                
                 //Pin inserted view under previous
                 [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:previousView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:self.innerViewSpacing]];
             } else {
@@ -146,9 +161,9 @@
             [self layoutIfNeeded];
             [UIView animateWithDuration:animated == YES ? TRANSITION_ANIMATION_DURATION_SECONDS : 0.0
                              animations:^{
-                                 NSLayoutConstraint *constraint = [self getConstraintForFirstItem:nextView forAttribute:NSLayoutAttributeTop];
+                                 NSLayoutConstraint *constraint = [self getConstraintForFirstItem:nextViewHasTitle ? nextViewAttachedView : nextView forAttribute:NSLayoutAttributeTop];
                                  [self removeConstraint:constraint];
-                                 [self addConstraint:[NSLayoutConstraint constraintWithItem:nextView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:self.innerViewSpacing]];
+                                 [self addConstraint:[NSLayoutConstraint constraintWithItem:nextViewHasTitle ? nextViewAttachedView : nextView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:self.innerViewSpacing]];
                                  [self layoutIfNeeded];
                              }];
         } else {
@@ -181,57 +196,7 @@
 - (void)removeViewsAtIndexes:(NSMutableIndexSet *)indexes animated:(BOOL) animated {
     while (indexes.count > 0) {
         NSUInteger idx = [indexes firstIndex];
-        if (self.privateViews.count > idx) {
-            UIView *view = self.privateViews[idx];
-            //Make old view disappear
-            [self layoutIfNeeded];
-            [UIView animateWithDuration:0.4
-                             animations:^{
-                                 view.alpha = 0.0;
-                                 [self layoutIfNeeded];
-                             }];
-            
-            if (self.privateViews.count > idx+1) {
-                UIView *nextView = [self.privateViews objectAtIndex:idx+1];
-                
-                if (self.privateViews.count > 1 && idx > 0) {
-                    UIView *previousView = [self.privateViews objectAtIndex:idx-1];
-                    
-                    //Pin next view under previous
-                    [self layoutIfNeeded];
-                    [UIView animateWithDuration:TRANSITION_ANIMATION_DURATION_SECONDS
-                                     animations:^{
-                                         NSLayoutConstraint *constraint = [self getConstraintForFirstItem:nextView forAttribute:NSLayoutAttributeTop];
-                                         [self removeConstraint:constraint];
-                                         [self addConstraint:[NSLayoutConstraint constraintWithItem:nextView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:previousView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:self.innerViewSpacing]];
-                                         [self layoutIfNeeded];
-                                     }];
-                } else {
-                    
-                    //Pin next view to top of scroll view
-                    [self layoutIfNeeded];
-                    [UIView animateWithDuration:TRANSITION_ANIMATION_DURATION_SECONDS
-                                     animations:^{
-                                         NSLayoutConstraint *constraint = [self getConstraintForFirstItem:nextView forAttribute:NSLayoutAttributeTop];
-                                         [self removeConstraint:constraint];
-                                         [self addConstraint:[NSLayoutConstraint constraintWithItem:nextView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
-                                         [self layoutIfNeeded];
-                                     }];
-                    
-                }
-            } else {
-                if (self.privateViews.count > 1 && idx > 0) {
-                    UIView *previousView = [self.privateViews objectAtIndex:idx-1];
-                    
-                    //Pin previous view to bottom
-                    NSLayoutConstraint *constraint = [self getConstraintForFirstItem:previousView forAttribute:NSLayoutAttributeBottom];
-                    [self removeConstraint:constraint];
-                    [self addConstraint:[NSLayoutConstraint constraintWithItem:previousView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationLessThanOrEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
-                }
-            }
-            [self.privateViews removeObjectAtIndex:idx];
-            [view removeFromSuperview];
-        }
+        [self removeViewAtIndex:idx animated:animated];
         [indexes removeIndex:[indexes firstIndex]];
         [indexes shiftIndexesStartingAtIndex:0 by:-1];
     }
@@ -251,16 +216,24 @@
         if (self.privateViews.count > idx+1) {
             UIView *nextView = [self.privateViews objectAtIndex:idx+1];
             
+            //Next view title
+            NSLayoutConstraint *constraint = [self getConstraintForFirstItem:nextView forAttribute:NSLayoutAttributeTop];
+            UIView *nextViewAttachedView = constraint.secondItem;
+            BOOL nextViewHasTitle = NO;
+            if ([self.titleViews containsObject:nextViewAttachedView]) {
+                nextViewHasTitle = YES;
+            }
+            
             if (self.privateViews.count > 1 && idx > 0) {
                 UIView *previousView = [self.privateViews objectAtIndex:idx-1];
                 
-                //Pin next view under previous
+                //Pin next view (or next title) under previous
                 [self layoutIfNeeded];
                 [UIView animateWithDuration:TRANSITION_ANIMATION_DURATION_SECONDS
                                  animations:^{
-                                     NSLayoutConstraint *constraint = [self getConstraintForFirstItem:nextView forAttribute:NSLayoutAttributeTop];
+                                     NSLayoutConstraint *constraint = [self getConstraintForFirstItem:nextViewHasTitle ? nextViewAttachedView : nextView forAttribute:NSLayoutAttributeTop];
                                      [self removeConstraint:constraint];
-                                     [self addConstraint:[NSLayoutConstraint constraintWithItem:nextView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:previousView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:self.innerViewSpacing]];
+                                     [self addConstraint:[NSLayoutConstraint constraintWithItem:nextViewHasTitle ? nextViewAttachedView : nextView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:previousView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:self.innerViewSpacing]];
                                      [self layoutIfNeeded];
                                  }];
             } else {
@@ -269,12 +242,11 @@
                 [self layoutIfNeeded];
                 [UIView animateWithDuration:TRANSITION_ANIMATION_DURATION_SECONDS
                                  animations:^{
-                                     NSLayoutConstraint *constraint = [self getConstraintForFirstItem:nextView forAttribute:NSLayoutAttributeTop];
+                                     NSLayoutConstraint *constraint = [self getConstraintForFirstItem:nextViewHasTitle ? nextViewAttachedView : nextView forAttribute:NSLayoutAttributeTop];
                                      [self removeConstraint:constraint];
-                                     [self addConstraint:[NSLayoutConstraint constraintWithItem:nextView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+                                     [self addConstraint:[NSLayoutConstraint constraintWithItem:nextViewHasTitle ? nextViewAttachedView : nextView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
                                      [self layoutIfNeeded];
                                  }];
-                
             }
         } else {
             if (self.privateViews.count > 1 && idx > 0) {
@@ -286,9 +258,87 @@
                 [self addConstraint:[NSLayoutConstraint constraintWithItem:previousView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationLessThanOrEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
             }
         }
+        //Remove title
+        NSLayoutConstraint *constraint = [self getConstraintForFirstItem:view forAttribute:NSLayoutAttributeTop];
+        UIView *attachedView = constraint.secondItem;
+        if ([self.titleViews containsObject:attachedView]) {
+            [attachedView removeFromSuperview];
+        }
+        
         [self.privateViews removeObjectAtIndex:idx];
         [view removeFromSuperview];
     }
+}
+
+#pragma mark Titles
+- (void)addTitle:(NSString*)title withBackgroundColor:(UIColor*)backgroundColor toView:(UIView*)view animated:(BOOL)animated{
+    NSUInteger idx = 0;
+    if ([self.privateViews containsObject:view]) {
+        idx = [self.privateViews indexOfObject:view];
+    } else {
+        [NSException raise:@"Invalid view" format:@"The view does not exist in the BVViewList."];
+    }
+    
+    UIView *titleView = [[UIView alloc] init];
+    titleView.backgroundColor = backgroundColor == nil ? [UIColor lightGrayColor] : backgroundColor;
+    
+    UILabel *titleLabel = [[UILabel alloc] init];
+    titleLabel.text = title;
+    titleLabel.font = self.titleFont;
+    
+    [titleView addSubview:titleLabel];
+    [titleLabel setTranslatesAutoresizingMaskIntoConstraints:NO];
+    
+    //Size
+    [titleView addConstraint:[NSLayoutConstraint constraintWithItem:titleLabel attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:titleView attribute:NSLayoutAttributeWidth multiplier:1.0 constant:-self.titleIndent]];
+    [titleView addConstraint:[NSLayoutConstraint constraintWithItem:titleLabel attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:titleView attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
+    
+    //Positioning
+    [titleView addConstraint:[NSLayoutConstraint constraintWithItem:titleLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:titleView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+    [titleView addConstraint:[NSLayoutConstraint constraintWithItem:titleLabel attribute:NSLayoutAttributeTrailing relatedBy:NSLayoutRelationEqual toItem:titleView attribute:NSLayoutAttributeTrailing multiplier:1.0 constant:0]];
+    
+    [self addSubview:titleView];
+    CGFloat oldAlpha = titleView.alpha;
+    titleView.alpha = 0.0;
+    [titleView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    //Size
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:titleView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:view.frame.size.width]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:titleView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:self.titleHeight]];
+    //Center
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:titleView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+    //Pin bottom to view
+    NSLayoutConstraint *constraint = [self getConstraintForFirstItem:view forAttribute:NSLayoutAttributeTop];
+    [self removeConstraint:constraint];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:titleView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+    
+    if (idx > 0) {
+        UIView *previousView = [self.privateViews objectAtIndex:idx-1];
+        
+        //Pin to bottom of previous view
+        [self layoutIfNeeded];
+        [UIView animateWithDuration:animated == YES ? TRANSITION_ANIMATION_DURATION_SECONDS : 0.0
+                         animations:^{
+                             [self addConstraint:[NSLayoutConstraint constraintWithItem:titleView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:previousView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:self.innerViewSpacing]];
+                             [self layoutIfNeeded];
+                         }];
+    } else {
+        //Pin to top
+        [self layoutIfNeeded];
+        [UIView animateWithDuration:animated == YES ? TRANSITION_ANIMATION_DURATION_SECONDS : 0.0
+                         animations:^{
+                             [self addConstraint:[NSLayoutConstraint constraintWithItem:titleView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+                             [self layoutIfNeeded];
+                         }];
+    }
+    
+    //Animate appearance
+    [self layoutIfNeeded];
+    [UIView animateWithDuration:animated == YES ? TRANSITION_ANIMATION_DURATION_SECONDS : 0.0
+                     animations:^{
+                         titleView.alpha = oldAlpha;
+                         [self layoutIfNeeded];
+                     }];
+    [self.titleViews addObject:titleView];
 }
 
 #pragma mark Other
