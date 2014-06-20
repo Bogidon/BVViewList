@@ -1,8 +1,10 @@
 PODS:
   - BVViewList (1.1.0)
+  - Masonry (0.5.2)
 
 DEPENDENCIES:
   - BVViewList (from `../`)
+  - Masonry
 
 EXTERNAL SOURCES:
   BVViewList:
@@ -10,5 +12,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BVViewList: 3af6f31200192f218d450933d0b5401255ae3a6c
+  Masonry: ec0189e1a07af00913e4a1a335ea76887adc86e1
 
 COCOAPODS: 0.33.1

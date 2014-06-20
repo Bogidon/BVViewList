@@ -19,6 +19,21 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    self.viewList.scrollDirection = BVViewListScrollDirectionHorizontal;
+    self.viewList.bounces = YES;
+    
+    if (self.viewList.scrollDirection == BVViewListScrollDirectionVertical) {
+        self.viewList.alwaysBounceVertical = YES;
+    } else {
+        self.viewList.alwaysBounceHorizontal = YES;
+    }
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+//    BVViewList *viewList = [[BVViewList alloc] initWithFrame:self.view.frame view:[self randomView]];
+//    self.viewList = viewList;
 }
 
 - (void)didReceiveMemoryWarning
@@ -29,11 +44,26 @@
 
 - (IBAction)addViewButtonTapped:(id)sender {
     
-    UIView *viewToAdd = [[UIView alloc] initWithFrame:(CGRect){.origin = CGPointZero, .size.width = self.viewList.frame.size.width,
-        .size.height = arc4random() % 100 + 50}];
-    UIColor *randomColor = [UIColor colorWithRed:[self random255] green:[self random255] blue:[self random255] alpha:[self random255]];
-    viewToAdd.backgroundColor = randomColor;
+    UIView *viewToAdd = [self randomView];
     [self.viewList insertView:viewToAdd atIndex:0 animated:YES];
+    [self.viewList addTitle:@"hello" withBackgroundColor:nil toView:viewToAdd animated:YES];
+}
+
+- (UIView*)randomView {
+    
+    CGFloat width, height;
+    if (self.viewList.scrollDirection == BVViewListScrollDirectionVertical) {
+        width = self.viewList.frame.size.width;
+        height = arc4random() % 100 + 50;
+    } else {
+        width = arc4random() % 50 + 50;
+        height = self.viewList.frame.size.height;
+    }
+    
+    UIView *view = [[UIView alloc] initWithFrame:(CGRect){.origin = CGPointZero, .size.width = width, .size.height = height}];
+    UIColor *randomColor = [UIColor colorWithRed:[self random255] green:[self random255] blue:[self random255] alpha:[self random255]];
+    view.backgroundColor = randomColor;
+    return view;
 }
 
 - (CGFloat)random255 {

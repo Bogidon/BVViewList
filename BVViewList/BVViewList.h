@@ -8,6 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+typedef enum {
+    BVViewListScrollDirectionVertical = 0,
+    BVViewListScrollDirectionHorizontal
+} BVViewListScrollDirection;
+
 @interface BVViewList : UIScrollView
 
 @property (nonatomic, readonly) NSArray *views;
@@ -15,6 +20,7 @@
 @property (nonatomic) NSInteger titleIndent;
 @property (nonatomic) NSInteger titleHeight;
 @property (nonatomic) UIFont *titleFont;
+@property (nonatomic) BVViewListScrollDirection scrollDirection;
 
 - (instancetype)initWithFrame:(CGRect)frame views: (NSArray *) views;
 - (instancetype)initWithFrame:(CGRect)frame view: (UIView *) view;
