@@ -116,35 +116,35 @@
 	self = [super initWithFrame:frame];
 	if (self) {
 		[self setProperties];
+        self.privateViews = [NSMutableArray arrayWithObject:view];
+		self.titleViews = [[NSMutableArray alloc] init];
+        
 		[self.privateViews addObject:view];
         
-		[view setTranslatesAutoresizingMaskIntoConstraints:NO];
+        [self addSubview:view];
+        [view setTranslatesAutoresizingMaskIntoConstraints:NO];
         
-        [view mas_makeConstraints:^(MASConstraintMaker *make) {
+        
+        [view mas_makeConstraints: ^(MASConstraintMaker *make) {
             if (!self.scrollDirection) {
-                //Position
                 make.top.equalTo(self.mas_top);
-                make.bottom.lessThanOrEqualTo(self.mas_top);
-                
-                //Center
-                make.centerX.equalTo(self.mas_centerX);
+                make.bottom.lessThanOrEqualTo(self.mas_bottom);
             } else {
-                //Position
                 make.left.equalTo(self.mas_left);
-                make.right.lessThanOrEqualTo(self.mas_left);
-                
-                //Center
-                //Only set the center when it's in vertical mode
-                //When the view is in horizontal mode, the view being inserted should just start at the top or below the title label
+                make.right.equalTo(self.mas_right);
+
             }
-            
             //Size
             make.width.equalTo([NSNumber numberWithFloat:view.frame.size.width]);
             make.height.equalTo([NSNumber numberWithFloat:view.frame.size.height]);
+            
+            //Only set the center when it's in vertical mode
+            //When the view is in horizontal mode, the view being inserted should just start at the top or below the title label
+            if (!self.scrollDirection) {
+                make.centerX.equalTo(self.mas_centerX);
+            }
         }];
-        
-		[self addSubview:view];
-	}
+    }
 	return self;
 }
 
