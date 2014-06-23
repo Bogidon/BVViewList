@@ -91,12 +91,10 @@
 		        make.width.equalTo([NSNumber numberWithFloat:view.frame.size.width]);
 		        make.height.equalTo([NSNumber numberWithFloat:view.frame.size.height]);
                 
-		        //Center
+                //Only set the center when it's in vertical mode
+                //When the view is in horizontal mode, the view being inserted should just start at the top or below the title label
 		        if (!self.scrollDirection) {
 		            make.centerX.equalTo(self.mas_centerX);
-				}
-		        else {
-		            make.centerY.equalTo(self.mas_centerY);
 				}
 			}];
 		}];
@@ -136,7 +134,8 @@
                 make.right.lessThanOrEqualTo(self.mas_left);
                 
                 //Center
-                make.centerY.equalTo(self.mas_centerY);
+                //Only set the center when it's in vertical mode
+                //When the view is in horizontal mode, the view being inserted should just start at the top or below the title label
             }
             
             //Size
@@ -180,14 +179,13 @@
 		[view mas_makeConstraints: ^(MASConstraintMaker *make) {
 		    //Size
 		    make.width.equalTo([NSNumber numberWithFloat:view.frame.size.width]);
-		    make.height.equalTo([NSNumber numberWithFloat:view.frame.size.height]);
+            make.height.equalTo([NSNumber numberWithFloat:view.frame.size.height]);
             
 		    //Center
+            //Only set the center when it's in vertical mode
+            //When the view is in horizontal mode, the view being inserted should just start at the top or below the title label
 		    if (!self.scrollDirection) {
 		        make.centerX.equalTo(self.mas_centerX);
-			}
-		    else {
-		        make.centerY.equalTo(self.mas_centerY);
 			}
 		}];
         
@@ -475,9 +473,19 @@
 	[self removeConstraint:constraint];
 	[view mas_makeConstraints: ^(MASConstraintMaker *make) {
 	    make.top.equalTo(titleView.mas_bottom);
+        
+        if (self.scrollDirection) {
+            NSLayoutConstraint *heightConstraint = [self getConstraintForItem:view firstItem:view attribute:NSLayoutAttributeHeight];
+            [view removeConstraint:heightConstraint];
+            
+            make.height.equalTo([NSNumber numberWithFloat:view.frame.size.height]);
+            [view setNeedsUpdateConstraints];
+        }
 	}];
     
-	if (idx > 0) {
+    //This case should only be valid for vertical layout
+    //With horizontal layout, title is always pinned to the top of the View List
+	if (idx > 0 && !self.scrollDirection) {
 		UIView *previousView = [self.privateViews objectAtIndex:idx - 1];
         
 		//Pin to bottom/right of previous view
@@ -490,6 +498,9 @@
                              [self layoutIfNeeded];
                          }];
 	}
+    
+    //Else case covers the first view in a vertical layout
+    //And all views in horizontal layout
 	else {
 		//Pin to top
 		[self layoutIfNeeded];
@@ -518,12 +529,24 @@
 }
 
 - (NSLayoutConstraint *)getConstraintForFirstItem:(UIView *)view forAttribute:(NSLayoutAttribute)attribute {
+    
+    //TODO: Refactor to use getConstraintForItem:firstItem:attribute: - or should the whole thing be moved into a category?
 	for (NSLayoutConstraint *constraint in[self constraints]) {
 		if ([[constraint firstItem] isEqual:view] && [constraint firstAttribute] == attribute) {
 			return constraint;
 		}
 	}
 	return nil;
+}
+
+- (NSLayoutConstraint*)getConstraintForItem:(UIView*)item firstItem:(UIView*)firstItem attribute:(NSLayoutAttribute)attribute {
+    for (NSLayoutConstraint *constraint in item.constraints) {
+        if ([constraint firstItem] == firstItem && [constraint firstAttribute] == attribute) {
+            return constraint;
+        }
+    }
+    
+    return nil;
 }
 
 @end

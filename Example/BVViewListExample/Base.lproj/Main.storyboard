@@ -16,13 +16,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cRe-4P-ME9" customClass="BVViewList">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cRe-4P-ME9" customClass="BVViewList">
                                 <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </scrollView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstAttribute="height" secondItem="cRe-4P-ME9" secondAttribute="height" id="4V8-2J-FWz"/>
+                            <constraint firstAttribute="centerX" secondItem="cRe-4P-ME9" secondAttribute="centerX" id="US0-iR-BSN"/>
+                            <constraint firstAttribute="centerY" secondItem="cRe-4P-ME9" secondAttribute="centerY" id="n68-cl-vvO"/>
+                            <constraint firstAttribute="width" secondItem="cRe-4P-ME9" secondAttribute="width" id="vVB-7d-9ZH"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="bSf-qL-DGH">
                         <barButtonItem key="leftBarButtonItem" title="Remove View" id="uCV-eb-lO9">

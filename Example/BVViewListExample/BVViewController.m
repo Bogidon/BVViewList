@@ -44,16 +44,26 @@
 
 - (IBAction)addViewButtonTapped:(id)sender {
     
-    UIView *viewToAdd = [self randomView];
-    [self.viewList insertView:viewToAdd atIndex:0 animated:YES];
-    [self.viewList addTitle:@"hello" withBackgroundColor:nil toView:viewToAdd animated:YES];
+    NSInteger numberOfViewsToAdd = 10;
+    NSMutableArray *viewsToAdd = [NSMutableArray array];
+    
+    for (int i = 0; i < numberOfViewsToAdd; i++) {
+        [viewsToAdd addObject:[self randomView]];
+    }
+    
+    if (numberOfViewsToAdd == 1) {
+        [self.viewList insertView:[viewsToAdd firstObject] atIndex:0 animated:YES];
+        [self.viewList addTitle:@"hello" withBackgroundColor:nil toView:[viewsToAdd firstObject] animated:YES];
+    } else {
+        [self.viewList insertViews:viewsToAdd atIndex:0 animated:YES];
+    }
 }
 
 - (UIView*)randomView {
     
     CGFloat width, height;
     if (self.viewList.scrollDirection == BVViewListScrollDirectionVertical) {
-        width = self.viewList.frame.size.width;
+        width = self.viewList.frame.size.width - 100;
         height = arc4random() % 100 + 50;
     } else {
         width = arc4random() % 50 + 50;
